@@ -12,7 +12,7 @@
 
 @protocol LLMoveAbleTableViewDelegate <NSObject, UITableViewDelegate>
 
-@optional
+@required
 
 /**
  *  给receiver重新设置目标indexPath的机会
@@ -60,6 +60,7 @@ targetIndexPathForMoveFromRowAtIndexPath:(NSIndexPath *)sourceIndexPath
  * @param tableView     当前tableview
  */
 - (void)didEndMoveableTableView:(LLMoveAbleTableView *)tableView;
+
 
 @end
 

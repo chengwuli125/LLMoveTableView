@@ -9,10 +9,18 @@
 #import "LLTestMoveTableViewController.h"
 #import "LLMoveAbleTableView.h"
 
+typedef NS_ENUM(NSInteger,LLMoveType){
+    LLMoveTypeDisEnable = 0,
+    LLMoveTypeEnable = 1
+};
+
+
 @interface LLMoveData : NSObject
 
 @property (nonatomic, copy) NSString *moveName;
 @property (nonatomic, copy) NSNumber *moveID;
+@property (nonatomic, assign) LLMoveType moveType;
+
 
 - (instancetype)initWithIndex:(NSInteger)index;
 
@@ -25,6 +33,9 @@
     if (self) {
         _moveName = [NSString stringWithFormat:@"move test ^-^ index = %ld",index];
         _moveID = [NSNumber numberWithInteger:index];
+        if (index > 7) {
+            _moveType = LLMoveTypeDisEnable;
+        } else _moveType = LLMoveTypeEnable;
     }
     return self;
 }
@@ -44,6 +55,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
+    self.title = @"MoveTableView";
     
     for (NSInteger i = 0; i < 10; i++) {
         LLMoveData *move = [[LLMoveData alloc] initWithIndex:i];
@@ -102,21 +114,18 @@
 - (NSIndexPath *)moveableTableView:(LLMoveAbleTableView *)tableView
 targetIndexPathForMoveFromRowAtIndexPath:(NSIndexPath *)sourceIndexPath
                toProposedIndexPath:(NSIndexPath *)proposedDestinationIndexPath{
-    /*LLMoveData *move = [self.moveDatas objectAtIndex:proposedDestinationIndexPath.row];
-    if (cardModel.cardType  == FMCardTypeDisable) {
+    LLMoveData *move = [self.moveDatas objectAtIndex:proposedDestinationIndexPath.row];
+    if (move.moveType  == LLMoveTypeDisEnable) {
         return sourceIndexPath;
     } else {
         return proposedDestinationIndexPath;
-    }*/
-    return proposedDestinationIndexPath;
+    }
 }
 
 - (BOOL)moveableTableView:(LLMoveAbleTableView *)tableView shouldMoveRowAtIndexPath:(NSIndexPath *)indexPath{
-    /*FMCardModel *cardModel = [self.cardManageList objectAtSafeIndex:indexPath.row];
-    NSAssert(cardModel, @"cardModel is nil");
-    return cardModel.cardType == FMCardTypeEnable;*/
-    
-    return YES;
+    LLMoveData *move = [self.moveDatas objectAtIndex:indexPath.row];
+    NSAssert(move, @"cardModel is nil");
+    return move.moveType == LLMoveTypeEnable;
 }
 
 - (void)moveableTableView:(LLMoveAbleTableView *)tableView didMoveRowFromIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
@@ -127,7 +136,9 @@ targetIndexPathForMoveFromRowAtIndexPath:(NSIndexPath *)sourceIndexPath
 }
 
 - (void)didEndMoveableTableView:(LLMoveAbleTableView *)tableView{
-    if (tableView) [self.moveTableView reloadData];
+    if (tableView){
+        [self.moveTableView reloadData];    
+    }
 }
 
 

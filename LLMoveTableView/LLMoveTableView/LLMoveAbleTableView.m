@@ -14,7 +14,6 @@
  * cell so the user thinks that he is moving the cell itself. Instead we clear out the
  * touched cell and just move snap shot.
  */
-
 @interface LLSnapShotImageView : UIImageView
 
 - (void)moveByOffset:(CGPoint)offset;
@@ -24,6 +23,7 @@
 @implementation LLSnapShotImageView
 
 #pragma mark - Autoscroll utilites
+
 - (void)moveByOffset:(CGPoint)offset{
     CGRect frame = [self frame];
     frame.origin.x += offset.x;
@@ -37,18 +37,15 @@
  * We need a little helper to cancel the current touch of the long press gesture recognizer
  * in the case the user does not tap on a row but on a section or table header
  */
-
 @interface UIGestureRecognizer (LLUtilities)
 
 - (void)cancelTouch;
 
 @end
 
-
 @implementation UIGestureRecognizer (LLUtilities)
 
-- (void)cancelTouch
-{
+- (void)cancelTouch{
     [self setEnabled:NO];
     [self setEnabled:YES];
 }
@@ -70,14 +67,13 @@
 /**
  * The autoscroll methods are based on Apple's sample code 'ScrollViewSuite'
  */
-
 @interface LLMoveAbleTableView (AutoscrollingMethods)
 
 - (void)maybeAutoscrollForSnapShotImageView:(LLSnapShotImageView *)snapShot;
 - (void)autoscrollTimerFired:(NSTimer *)timer;
 - (void)legalizeAutoscrollDistance;
-- (float)autoscrollDistanceForProximityToEdge:(float)proximity;
 - (void)stopAutoscrolling;
+- (float)autoscrollDistanceForProximityToEdge:(float)proximity;
 
 @end
 
@@ -93,8 +89,7 @@
 @synthesize autoscrollDistance = _autoscrollDistance;
 @synthesize autoscrollThreshold = _autoscrollThreshold;
 
-#pragma mark -
-#pragma mark View life cycle
+#pragma mark - View life cycle
 
 - (UILongPressGestureRecognizer *)movingGestureRecognizer {
     if (!_movingGestureRecognizer) {
@@ -104,23 +99,19 @@
     return _movingGestureRecognizer;
 }
 
-- (void)awakeFromNib
-{
+- (void)awakeFromNib{
     [super awakeFromNib];
     
     [self removeGestureRecognizer:self.movingGestureRecognizer];
     [self addGestureRecognizer:self.movingGestureRecognizer];
 }
 
-- (id)initWithFrame:(CGRect)frame style:(UITableViewStyle)style
-{
+- (id)initWithFrame:(CGRect)frame style:(UITableViewStyle)style{
     self = [super initWithFrame:frame style:style];
-    
     if (self) {
         [self removeGestureRecognizer:self.movingGestureRecognizer];
         [self addGestureRecognizer:self.movingGestureRecognizer];
     }
-    
     return self;
 }
 
@@ -161,8 +152,7 @@
             [[self snapShotImageView] setFrame:destFrame];
             [[self snapShotImageView] setAlpha:1.0];
         } completion:^(BOOL finished) {
-            if (finished)
-            {
+            if (finished){
                 // Clean up snap shot
                 [[self snapShotImageView] removeFromSuperview];
                 [self setSnapShotImageView:nil];
@@ -174,10 +164,11 @@
                 [self insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationNone];
                 
                 // Inform the delegate to update it's model
-                if ([[self delegate] respondsToSelector:@selector(moveableTableView:didMoveRowFromIndexPath:toIndexPath:)]) {
-                    [[self delegate] moveableTableView:self didMoveRowFromIndexPath:indexPath toIndexPath:newIndexPath];
+                if ([self.delegate
+                     respondsToSelector:@selector(moveableTableView:didMoveRowFromIndexPath:toIndexPath:)]) {
+                    [self.delegate moveableTableView:self didMoveRowFromIndexPath:indexPath
+                                           toIndexPath:newIndexPath];
                 }
-                
                 [self endUpdates];
             }
         }];
